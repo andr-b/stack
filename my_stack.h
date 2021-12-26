@@ -25,18 +25,6 @@ struct DataBuf
 		capacity = other.capacity;
 		std::uninitialized_copy_n(other.buf, other.size, buf);
 		size = other.size;
-		//size_t i = 0;
-		//try
-		//{
-		//for(; i < other.size; ++i)
-		//	{
-		//	buf[i] = other[i];
-		//	size += 1;
-		//	}
-		//} catch (...)
-		//{
-		//	throw;
-		//}
 	}
 
 
@@ -63,12 +51,6 @@ struct DataBuf
 			DataBuf<T, Allocator> tmp(capacity);
 			std::uninitialized_copy_n(other.buf, other.size, tmp.buf);
 			tmp.size = other.size;
-			//for(size_t i = 0; i < other.size; ++i)
-			//{
-			//tmp[i] = other[i];
-			//tmp.size += 1;
-			//}
-			//tmp.Swap(*this);
 		}
 		return *this;
 	}
@@ -84,12 +66,6 @@ struct DataBuf
 			DataBuf<T, Allocator> tmp(capacity);
 			std::uninitialized_move_n(other.buf, other.size, tmp.buf);
 			tmp.size = other.size;
-			//for(size_t i = 0; i < other.size; ++i)
-			//{
-			//tmp[i] = std::move(other[i]);
-			//tmp.size += 1;
-			//}
-			//tmp.Swap(*this);
 		}
 		return *this;
 	}
@@ -134,9 +110,6 @@ struct DataBuf
 	{
 		return buf[i];
 	}
-
-	//template<typename... Args>
-	//void Emplace(Args&&... args);
 	
 	void Destroy()
 	{
@@ -165,7 +138,7 @@ class my_stack
 
 	public:
 	using allocator_type = A;
-	my_stack(size_t n = 1) : data(n)
+	my_stack(size_t n = 0) : data(n)
 	{
 	for (size_t i = 0; i < n; ++i)
 	{
@@ -231,7 +204,7 @@ class my_stack
 	}
 
 
-	T pop()
+	T pop()   // This method is here because appropriate task 
 	{
 		T ret = Top();
 		Pop();
@@ -249,55 +222,25 @@ class my_stack
 		return data.size;
 	}
 
+	bool operator == (const my_stack<T, A>& other) const
+	{
+		return data == other.data;
+	}
 
+	bool operator != (const my_stack<T, A>& other) const
+	{
+		return data != other.data;
+	}
+	const DataBuf<T, A>& Get() const
+	{
+		return data;
+	}
 
 };
 
 
 
 //DEFINITIONS:
-/*
-	template<typename T, typename Allocator>
-	template<typename... Args>
-        void DataBuf<T, Allocator>::Emplace(Args&&... args)
-	{	
-#ifdef DEBUG
-		std::cout << "Emplace by constructor \n";
-#endif
-		if(size == capacity)
-		{
-			size_t newcap = capacity * 2;
-			T* buf2 = m_allocator.allocate(newcap, alignof(T));
-			size_t i = 0;
-			try {
-			for(; i < size; ++i)
-				{	
-				buf2[i] = buf[i];
-				}
-			} catch(...)
-			{
-				for (size_t j = 0; j < i; ++j)
-				{
-					buf2[j].~T();
-				}
-				m_allocator.deallocate(buf2, newcap, alignof(T));
-				throw;
-			}
-		for (size_t i = 0; i < size; ++i)
-		{
-			buf[i].~T();
-		}
-		m_allocator.deallocate(buf, capacity, alignof(T));
-		buf = buf2;
-		capacity = newcap;
-		new (buf + size) T(std::forward<Args>(args)...);
-		size += 1;
-		} else {
-		new (buf + size) T(std::forward<Args>(args)...);
-		size += 1;
-		}
-	}
-*/
 
 	template<typename T, typename Allocator>
 	void DataBuf<T, Allocator>::Emplace(const T& arg)
@@ -308,13 +251,12 @@ class my_stack
 		if(size == capacity)
 		{
 			size_t newcap = capacity * 2;
+			if (size == 0)
+			{
+			   newcap = 1;
+			}	
 			T* buf2 = m_allocator.allocate(newcap, alignof(T));
 			std::uninitialized_copy_n(buf, size, buf2);
-			//size_t i = 0;
-			//for(; i < size; ++i)
-			//{
-			//buf2[i] = buf[i];
-			//}
 
 		for (size_t i = 0; i < size; ++i)
 		{
@@ -346,15 +288,14 @@ class my_stack
 		std::cout << "Emplace by rvalue \n";
 #endif
 		if(size == capacity)
-		{
+		{			
 			size_t newcap = capacity * 2;
+			if (size == 0)
+			{
+			     newcap = 1;
+			}
 			T* buf2 = m_allocator.allocate(newcap, alignof(T));
 			std::uninitialized_move_n(buf, size, buf2);
-			//size_t i = 0;
-			//for(; i < size; ++i)
-			//{
-			//buf2[i] = std::move(buf[i]);
-			//}
 			
 		for (size_t i = 0; i < size; ++i)
 		{
@@ -376,3 +317,44 @@ class my_stack
 		size += 1;
 		}
 	}
+
+
+template<typename T1, typename Allocator1, typename T2, typename Allocator2>
+bool operator==(const DataBuf<T1, Allocator1>& lhs, const DataBuf<T2, Allocator2>& rhs) 
+{
+	if ((lhs.size == rhs.size) && (lhs.m_allocator == rhs.m_allocator))	
+	{
+		for (size_t i = 0; i < lhs.size; ++i) 
+		{
+			if (rhs[i] != lhs[i])
+			return false;
+		}
+		return true;
+	} else
+	{
+		return false;
+	}
+}
+
+
+
+template<typename T1, typename Allocator1, typename T2, typename Allocator2>
+bool operator!=(const DataBuf<T1, Allocator1>& lhs, const DataBuf<T2, Allocator2>& rhs) 
+{
+	return !(lhs == rhs);
+}
+
+
+template<typename T1, typename Allocator1, typename T2, typename Allocator2>
+bool operator == (const my_stack<T1, Allocator1>& lhs, const my_stack<T2, Allocator2>& rhs)
+{
+	return lhs.Get() == rhs.Get();
+}
+
+
+
+template<typename T1, typename Allocator1, typename T2, typename Allocator2>
+bool operator != (const my_stack<T1, Allocator1>& lhs, const my_stack<T2, Allocator2>& rhs)
+{
+	return lhs.Get() != rhs.Get();
+}	

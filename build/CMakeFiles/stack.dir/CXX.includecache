@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mdjer/progs/globallogic/stack/main.cpp
+iostream
+-
+my_stack.h
+/home/mdjer/progs/globallogic/stack/my_stack.h
+cassert
+-
+
+/home/mdjer/progs/globallogic/stack/my_allocator.h
+memory_resource
+-
+iostream
+-
+
+/home/mdjer/progs/globallogic/stack/my_stack.h
+my_allocator.h
+/home/mdjer/progs/globallogic/stack/my_allocator.h
+iostream
+-
+list
+-
+memory
+-
+utility
+-
+
