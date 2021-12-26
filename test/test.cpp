@@ -53,6 +53,18 @@ TEST(AssignmentTest, equal_on_copy_assignment)
 	EXPECT_EQ(stack, stack2);
 }
 
+TEST(Exception, empty_pop)
+{
+	my_stack<int> stack;
+	EXPECT_THROW(stack.Pop(), std::invalid_argument);
+}
+
+TEST(Exception, empty_top)
+{
+	my_stack<int> stack;
+	EXPECT_THROW(stack.Top(), std::invalid_argument);
+}
+
 TEST(AssignmentTest, not_equal_after_pop)
 {
 	my_stack<int> stack;
