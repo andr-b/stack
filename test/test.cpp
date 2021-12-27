@@ -44,12 +44,22 @@ TEST(Stack_base_func, push_and_second_pop)
 		EXPECT_EQ(stack.Capacity(), 0);
 }
 
-TEST(AssignmentTest, equal_on_copy_assignment)
+TEST(AssignmentTest, equal_on_copy_ctor)
 {
 	my_stack<int> stack;
 	stack.Push(42);
 	stack.Push(42);
 	my_stack<int> stack2(stack);
+	EXPECT_EQ(stack, stack2);
+}
+
+TEST(AssignmentTest, equal_on_copy_assignment)
+{
+	my_stack<int> stack;
+	stack.Push(42);
+	stack.Push(42);
+	my_stack<int> stack2;
+	stack2 = stack;
 	EXPECT_EQ(stack, stack2);
 }
 
