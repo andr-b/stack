@@ -204,22 +204,16 @@ class my_stack
 	}
 
 
-	T pop()   // This method is here because appropriate task 
-	{
-		T ret = Top();
-		Pop();
-		return ret;
-	}
 
 	size_t Size()
 	{
-		return data.capacity;
+		return data.size;
 	}
 
 
 	size_t Capacity()
 	{
-		return data.size;
+		return data.capacity;
 	}
 
 	bool operator == (const my_stack<T, A>& other) const
